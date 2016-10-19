@@ -19,10 +19,12 @@ plain = open("dictionary_encode", "r")  # open the English dictionary
 words = plain.read().split('\n')
 
 dic = codecs.open("dictionary", "w", "utf-8") # open the bijection dictionary
-character = 0x0080      
+character = 0x0080     
 sum = 0
+
 for word in words:		# set up bijection for each word
 	sum += len(word)
+
 	if (len(word) > 2):	
 		dic.write(word)
 		dic.write(' ')
