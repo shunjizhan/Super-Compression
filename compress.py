@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from random import randint
 import codecs
+from cStringIO import StringIO
 
 def modify_bi(bi):
 	plus = 14-len(bi)
@@ -54,9 +55,9 @@ def modify(file):
 	words = random.read().split(' ')
 
 	#c = []
-	cc = []
+	#cc = []
 	for word in words:
-		cc.append(word)
+		#cc.append(word)
 		if ('\n' in word):
 			position = word.find('\n')
 			random_modified.write(word[0:position-1])  
@@ -94,7 +95,7 @@ def modify(file):
 		#	c.append(word)
 			random_modified.write(' ')
 
-	print cc
+	#print cc
 	#print c
 	random.close()
 	random_modified.close()
@@ -148,7 +149,7 @@ def compress():
 
 ########## decode() ##########
 def decode(word):
-	print word
+	#print word
 	if (word == '00000000000000'):
 		return '\n'
 	else:
@@ -205,6 +206,7 @@ def modify_hex(word):
 		return '0' + word	
 
 def encode_hex():
+
 	file = open("encrypt", "r")
 	string = file.read()
 	plus = 16 - (len(string) % 16)
@@ -222,18 +224,50 @@ def encode_hex():
 			word = modify_hex(hex(int(word, 2)).strip('0x'))
 			if (len(word) == 2):
 				encode.write(word)
-				encode.write(' ')
 				word = ''
+
+	test(string)
+
+def test(string):
+
+	s = string
+	sio = StringIO(s)
+
+	f = open('realoutput', 'wb')
+
+	while 1:
+	    # Grab the next 8 bits
+	    b = sio.read(8)
+
+	    # Bail if we hit EOF
+	    if not b:
+	        break
+
+	    # If we got fewer than 8 bits, pad with zeroes on the right
+	    if len(b) < 8:
+	        b = b + '0' * (8 - len(b))
+
+	    # Convert to int
+	    i = int(b, 2)
+
+	    # Convert to char
+	    c = chr(i)
+
+	    # Write
+	    f.write(c)
+
+	f.close()
+
 	
 
 ########## run() ##########
 def run(plain_file):
-	rand_gen(10)	# generate a random text file
+	rand_gen(10000)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
 	compress()	# encode the text file
 	encode_hex()
-	decompress()
+	#decompress()
 
 
 ########## main() ##########
