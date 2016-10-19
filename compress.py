@@ -169,7 +169,6 @@ def decompress():
 
 	i = 0
 	word = ''
-	print string
 
 	input = []
 	while(i < len(string)):
@@ -199,12 +198,41 @@ def decompress():
 
 	print "Finished decoding!!!"
 
+def modify_hex(word):
+	if (len(word) == 2):
+		return word
+	else:
+		return '0' + word	
+
+def encode_hex():
+	file = open("encrypt", "r")
+	string = file.read()
+	plus = 16 - (len(string) % 16)
+	for k in range(0, plus):
+		string += '0'
+	encode = open("encode_hex", "w")
+
+	i = 0
+	word = ''
+
+	while(i < len(string)):
+		word += string[i]
+		i += 1
+		if (i%8 == 0):
+			word = modify_hex(hex(int(word, 2)).strip('0x'))
+			if (len(word) == 2):
+				encode.write(word)
+				encode.write(' ')
+				word = ''
+	
+
 ########## run() ##########
 def run(plain_file):
-	rand_gen(1000)	# generate a random text file
+	rand_gen(10)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
 	compress()	# encode the text file
+	encode_hex()
 	decompress()
 
 
