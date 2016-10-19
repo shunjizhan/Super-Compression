@@ -10,7 +10,7 @@ for i in range(10000):
 	if (randNum < 1000):	# 10%
 		random_file.write(',')
 		random_file.write(' ')
-	elif (randNum > 8000):	# 20%
+	elif (randNum > 9000):	# 10%
 		random_file.write('.')
 		random_file.write(' ')
 	elif not(randNum < 1200): 

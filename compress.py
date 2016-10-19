@@ -1,57 +1,129 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from random import randint
 import codecs
 
+def rand_gen():
+	plain = open("dictionary_encode", "r")
+	words = plain.read().split('\n')
+	random_file = open("random", "w")
+
+	for i in range(10000):
+		randNum = randint(0, 9577)
+		random_file.write(words[randNum])
+		if (randNum < 1000):	# 10%
+			random_file.write(',')
+			random_file.write(' ')
+		elif (randNum > 9000):	# 10%
+			random_file.write('.')
+			random_file.write(' ')
+		elif not(randNum < 1200): 
+			random_file.write(' ')
+		else:					# 2%
+			random_file.write(".\n")
+
+	plain.close()
+	random_file.close()
+	print "finished generating text!"
+
+########## encode() ##########
 def encode(word):
 	dic = open("dictionary", "r")
 	for line in dic:
 		Line = line.split(" ")
-		#print Line[0]
-		#print word
-		#if (unicode(word, "utf-8") == unicode(Line[0], "utf-8")):
+
 		if (word == Line[0]):
 			return Line[1].strip('\n')
 
 	return word
 
-print "start to set up dictionary..."
-plain = open("dictionary_encode", "r")  # open the English dictionary
-words = plain.read().split('\n')
+########## modify() ##########
+def modify(file):
+	random = open(file, "r")
+	random_modified = open("random_modified", "w")
+	words = random.read().split(' ')
 
-dic = codecs.open("dictionary", "w", "utf-8") # open the bijection dictionary
-character = 0x0080     
-sum = 0
+	for word in words:
+		lastchar = word[-1:]
+		if ((lastchar == ',') or (lastchar == '.')):
+			word_split = word.split()
+			random_modified.write(word[0:-1])
+			random_modified.write(' ')
+			random_modified.write(word[-1:])
+			random_modified.write(' ')
 
-for word in words:		# set up bijection for each word
-	sum += len(word)
+		elif ('\n' in word):
+			position = word.find('\n')
+			random_modified.write(word[0:position-1]) # .
+			random_modified.write(' ')
+			random_modified.write(word[position-1]) # \n
+			random_modified.write(' ')
+			random_modified.write(word[position])
+			random_modified.write(' ')
+			random_modified.write(word[position+1:])
+			random_modified.write(' ')
 
-	if (len(word) > 2):	
-		dic.write(word)
-		dic.write(' ')
-		dic.write(unichr(character))
-		dic.write('\n')
-		character += 1
+		else:
+			random_modified.write(word)
+			random_modified.write(' ')
 
-print "average length of the words:",
-print sum*1.0/len(words)
-plain.close()
-dic.close()
-print "finished set up dictionary"
+	random.close()
+	random_modified.close()
+	print "finished modifying!"
 
 
-######### Start to encode and compress #########
-print "start to encode..."
-rand = open("random", "r")			# open the random generated file
-rand_words = rand.read().split(' ')
+########## set_up_dict() ##########
+def set_up_dict():
+	plain = open("dictionary_encode", "r")  # open the English dictionary
+	words = plain.read().split('\n')
 
-encrypt_text = codecs.open("encrypt", "w")
-for rand_word in rand_words:		# encode each word
-	encrypt_text.write(encode(rand_word))
+	dic = codecs.open("dictionary", "w", "utf-8") # open the bijection dictionary
+	character = 0x0080     
+	sum = 0
 
-plain.close()
-encrypt_text.close()
+	for word in words:		# set up bijection for each word
+		sum += len(word)
 
-print "Finished!!!"
+		if (len(word) > 2):	
+			dic.write(word)
+			dic.write(' ')
+			dic.write(unichr(character))
+			dic.write('\n')
+			character += 1
+
+	print "average length of the words:",
+	print sum*1.0/len(words)
+	plain.close()
+	dic.close()
+	print "finished setting up dictionary!"
+
+########## compress() ##########
+def compress():
+	rand = open("random_modified", "r")			# open the random generated file
+	rand_words = rand.read().split(' ')
+
+	encrypt_text = codecs.open("encrypt", "w")
+	for rand_word in rand_words:		# encode each word
+		encrypt_text.write(encode(rand_word))
+
+	rand.close()
+	encrypt_text.close()
+
+	print "Finished encoding!!!"
+
+########## run() ##########
+def run(plain_file):
+	rand_gen()	# generate a random text file
+	modify(plain_file)	# modify the text file
+	set_up_dict()	# set up the bijection dictionary
+	compress()	# encode the text file
+
+
+########## main() ##########
+file = "random"
+run(file)
+
+
 
 
 
