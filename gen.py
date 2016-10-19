@@ -15,7 +15,7 @@ words = plain.read().split('\n')
 
 
 dic = codecs.open("dictionary", "w", "utf-8")
-character = 0x3428
+character = 0x0100
 for word in words:
 	# print compress(word)
 	if (len(word) > 2):
