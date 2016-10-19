@@ -3,14 +3,19 @@
 from random import randint
 import codecs
 
+def modify_bi(bi):
+	plus = 14-len(bi)
+	for i in range(0, plus):
+		bi = '0' + bi
+	return bi
 
 ########## rand_gen() ##########
-def rand_gen():
+def rand_gen(num):
 	plain = open("dictionary_encode", "r")
 	words = plain.read().split('\n')
 	random_file = open("random", "w")
 
-	for i in range(10000):
+	for i in range(num):
 		randNum = randint(0, 9577)
 		random_file.write(words[randNum])
 		if (randNum < 1000):	# 10%
@@ -31,13 +36,16 @@ def rand_gen():
 ########## encode() ##########
 def encode(word):
 	dic = open("dictionary", "r")
-	for line in dic:
-		Line = line.split(" ")
+	if (word == '\n'):
+		return "00000000000000"
+	else:
+		for line in dic:
+			Line = line.split(" ")
 
-		if (word == Line[0]):
-			return Line[1].strip('\n')
+			if (word == Line[0]):
+				return Line[1].strip('\n')
 
-	return word
+	return "11111111111111"   # unrevognized word
 
 ########## modify() ##########
 def modify(file):
@@ -45,30 +53,49 @@ def modify(file):
 	random_modified = open("random_modified", "w")
 	words = random.read().split(' ')
 
+	#c = []
+	cc = []
 	for word in words:
-		lastchar = word[-1:]
-		if ((lastchar == ',') or (lastchar == '.')):
-			word_split = word.split()
-			random_modified.write(word[0:-1])
-			random_modified.write(' ')
-			random_modified.write(word[-1:])
-			random_modified.write(' ')
-
-		elif ('\n' in word):
+		cc.append(word)
+		if ('\n' in word):
 			position = word.find('\n')
-			random_modified.write(word[0:position-1]) # .
+			random_modified.write(word[0:position-1])  
+		#	c.append(word[0:position-1])
 			random_modified.write(' ')
-			random_modified.write(word[position-1]) # \n
+			random_modified.write(word[position-1])  
+		#	c.append(word[position-1])
 			random_modified.write(' ')
 			random_modified.write(word[position])
+		#	c.append(word[position])
 			random_modified.write(' ')
-			random_modified.write(word[position+1:])
+			if ((word[-1:] == ',') or (word[-1:] == '.')):
+				random_modified.write(word[position+1:-1])
+			#	c.append(word[position+1:-1])
+				random_modified.write(' ')
+				random_modified.write(word[-1:])
+			#	c.append(word[-1:])
+				random_modified.write(' ')
+			else:
+				random_modified.write(word[position+1:])
+			#	c.append(word[position+1:])
+				random_modified.write(' ')
+
+		elif ((word[-1:] == ',') or (word[-1:] == '.')):
+			word_split = word.split()
+			random_modified.write(word[0:-1])
+		#	c.append(word[0:-1])
+			random_modified.write(' ')
+			random_modified.write(word[-1:])
+		#	c.append(word[-1:])
 			random_modified.write(' ')
 
 		else:
 			random_modified.write(word)
+		#	c.append(word)
 			random_modified.write(' ')
 
+	print cc
+	#print c
 	random.close()
 	random_modified.close()
 	print "finished modifying!"
@@ -80,15 +107,19 @@ def set_up_dict():
 	words = plain.read().split('\n')
 
 	dic = codecs.open("dictionary", "w", "utf-8") # open the bijection dictionary
-	character = 0x0080     
+	#character = 0x0080  
+	num = 1  
 
 	for word in words:		# set up bijection for each word
-		if (len(word) > 2):	
+		#if ((len(word) > 2) or (word == ',') or (word == '.') or (word == '\n')):	
 			dic.write(word)
 			dic.write(' ')
-			dic.write(unichr(character))
+			#dic.write(unichr(character))
+			binary = str('{0:1b}'.format(num))
+			dic.write(modify_bi(binary))
 			dic.write('\n')
-			character += 1
+			#character += 1
+			num += 1
 
 	plain.close()
 	dic.close()
@@ -117,28 +148,51 @@ def compress():
 
 ########## decode() ##########
 def decode(word):
-	dic = open("dictionary", "r")
 	print word
-	for line in dic:
-		Line = line.split(" ")
+	if (word == '00000000000000'):
+		return '\n'
+	else:
+		dic = open("dictionary", "r")
+		for line in dic:
+			Line = line.split(" ")
 
-		if (word == Line[1]):
-			print "!!!!!"
-			return Line[0].strip('\n')
+			if (word == Line[1].strip('\n')):
+				return Line[0]
 
-	return word
+	return '###unrecognized_word####'
 
 ########## decompress() ##########
 def decompress():
 	en = codecs.open("encrypt", "r", "utf-8")
-	line = en.readlines()			
-	words = []
-	for i in range(0, len(line)):
-		words.append(line[i])
-
+	string = en.read()		
 	decrypt_text = codecs.open("decrypt", "w")
-	for word in words:		# decode each word
-		decrypt_text.write(decode(word))
+
+	i = 0
+	word = ''
+	print string
+
+	input = []
+	while(i < len(string)):
+		word += string[i]
+		i += 1
+		if (i%14 == 0):
+			#decrypt_text.write(decode(word))
+			input.append(decode(word))
+			word = ''
+	k = 0
+	while(k < len(input)):
+		if ((k+1 < len(input)) and ((input[k+1] == ',') or (input[k+1] == '.'))):
+			decrypt_text.write(input[k])
+			decrypt_text.write(input[k+1])
+			decrypt_text.write(' ')
+			k += 2
+		elif (input[k] == '\n'):
+			decrypt_text.write(input[k])
+			k += 1
+		else:
+			decrypt_text.write(input[k])
+			decrypt_text.write(' ')
+			k += 1
 
 	en.close()
 	decrypt_text.close()
@@ -147,10 +201,10 @@ def decompress():
 
 ########## run() ##########
 def run(plain_file):
-	rand_gen()	# generate a random text file
+	rand_gen(1000)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
-	#compress()	# encode the text file
+	compress()	# encode the text file
 	decompress()
 
 
