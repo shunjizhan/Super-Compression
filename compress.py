@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from random import randint
-import codecs
 from cStringIO import StringIO
+import codecs
+import os
+
 
 def modify_bi(bi):
 	plus = 14-len(bi)
@@ -46,7 +48,7 @@ def encode(word):
 			if (word == Line[0]):
 				return Line[1].strip('\n')
 
-	return "11111111111111"   # unrevognized word
+	return "11111111111111"   # unrecognized word
 
 ########## modify() ##########
 def modify(file):
@@ -135,9 +137,10 @@ def compress():
 	sum = 0
 	num = 0
 	for rand_word in rand_words:		# encode each word
-		sum += len(rand_word)
-		num += 1
-		encrypt_text.write(encode(rand_word))
+		if not(rand_word == ''):
+			sum += len(rand_word)
+			num += 1
+			encrypt_text.write(encode(rand_word))
 
 	rand.close()
 	encrypt_text.close()
@@ -224,20 +227,22 @@ def encode_hex():
 			word = modify_hex(hex(int(word, 2)).strip('0x'))
 			if (len(word) == 2):
 				encode.write(word)
+				if (i%16 == 0):
+					encode.write(' ')
 				word = ''
 
 	test(string)
 
 def test(string):
 
-	s = string
-	sio = StringIO(s)
+	sio = StringIO(string)
 
 	f = open('realoutput', 'wb')
 
 	while 1:
 	    # Grab the next 8 bits
 	    b = sio.read(8)
+	    #print b
 
 	    # Bail if we hit EOF
 	    if not b:
@@ -249,25 +254,70 @@ def test(string):
 
 	    # Convert to int
 	    i = int(b, 2)
+	    #print i
 
 	    # Convert to char
 	    c = chr(i)
+	    #print c
 
 	    # Write
 	    f.write(c)
 
 	f.close()
 
+def de():
+	# first read all the binary data from file
+	f = open("realoutput", "rb")
+	write = open("realdecode", "w")
+	word = f.read()
+	#print word
+	string = ''
+	for char in word:
+		# string += str(ord(char))
+		word = "{0:b}".format(ord(char))
+		word = '0'*(8-len(word)) + word
+		#print word
+		write.write(word)
+
+	f.close()
+	write.close()
+
+	# decode binary data to plain text
+	f = open("realdecode", "r")
+	write = open("realplain", "w")
+	file = f.read()
+
+	i = 0
+	word = ""
+	while (i <len(file)):
+		word += file[i]
+		i += 1
+		if (i%14 == 0):
+			write.write(decode(word))
+			write.write(' ')
+			word = ""
+
+	f.close()
+	write.close()
+
+
+
 	
 
 ########## run() ##########
 def run(plain_file):
-	rand_gen(10000)	# generate a random text file
+	rand_gen(100)	# generate a random text file
 	modify(plain_file)	# modify the text file
-	set_up_dict()	# set up the bijection dictionary
-	compress()	# encode the text file
+	#set_up_dict()	# set up the bijection dictionary
+	compress()	# encode the text file #*****#
 	encode_hex()
 	#decompress()
+	de()
+
+	before = os.stat(plain_file).st_size
+	after = os.stat('realoutput').st_size
+	print "finished compressing %s(%dKB) to realoutput(%dKB)!" % (plain_file, before, after)
+	print "compression ratio: %.3f" % (after*1.0/before)
 
 
 ########## main() ##########
