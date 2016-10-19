@@ -16,7 +16,7 @@ def modify_bi(bi):
 def rand_gen(num):
 	plain = open("dictionary_encode", "r")
 	words = plain.read().split('\n')
-	random_file = open("random", "w")
+	random_file = open("random_generated_file", "w")
 
 	for i in range(num):
 		randNum = randint(0, 9577)
@@ -239,7 +239,7 @@ def test(string):
 
 	sio = StringIO(string)
 
-	f = open('realoutput', 'wb')
+	f = open('super_compressed_file', 'wb')
 
 	while 1:
 	    # Grab the next 8 bits
@@ -269,7 +269,7 @@ def test(string):
 
 def de():
 	# first read all the binary data from file
-	f = open("realoutput", "rb")
+	f = open("super_compressed_file", "rb")
 	write = open("realdecode", "w")
 	word = f.read()
 	#print word
@@ -326,7 +326,7 @@ def de():
 
 ########## run() ##########
 def run(plain_file):
-	rand_gen(100)	# generate a random text file
+	rand_gen(1000)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	#set_up_dict()	# set up the bijection dictionary
 	compress()	# encode the text file #*****#
@@ -335,13 +335,13 @@ def run(plain_file):
 	de()
 
 	before = os.stat(plain_file).st_size
-	after = os.stat('realoutput').st_size
-	print "finished compressing %s(%dKB) to realoutput(%dKB)!" % (plain_file, before, after)
+	after = os.stat('super_compressed_file').st_size
+	print "finished compressing %s(%dKB) to super_compressed_file(%dKB)!" % (plain_file, before, after)
 	print "compression ratio: %.3f" % (after*1.0/before)
 
 
 ########## main() ##########
-file = "random"
+file = "random_generated_file"
 run(file)
 
 
