@@ -7,8 +7,10 @@ def encode(word):
 	for line in dic:
 		Line = line.split(" ")
 		#print Line[0]
-		if (unicode(word, "utf-8") == unicode(Line[0], "utf-8")):
-			return Line[1]
+		#print word
+		#if (unicode(word, "utf-8") == unicode(Line[0], "utf-8")):
+		if (word == Line[0]):
+			return Line[1].strip('\n')
 
 	return word
 	
@@ -19,12 +21,14 @@ words = plain.read().split(' ')
 # print words
 
 
-encrypt_text = codecs.open("encrypt.txt", "w", "utf-8")
+encrypt_text = codecs.open("encrypt.txt", "w")
 for word in words:
 	# print compress(word)
 	# encrypt_text.write(unichr(encode(word)))
 	# encrypt_text.write('')
-	encrypt_text.write(encode(word))
+	word = encode(word)
+	#print word
+	encrypt_text.write(word)
 
 plain.close()
 encrypt_text.close()
