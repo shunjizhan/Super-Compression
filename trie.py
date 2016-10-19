@@ -64,18 +64,20 @@ class Trie(object):
 					is_there=True
 					k=j
 
+
 			if (is_there==False):
 				print("There is no this word in our dictionary");
 				break
 			else:
-				if (i==n-1) and (p.is_word):
+				
+				if (i==n-1) and (p.children[k].is_word):
 					print "Word encode is ",
 					print(p.key)
 					break
 				p=p.children[k]
 
-
-		print("There is no this word in our dictionary");		
+		if (i==n):
+		 	print("There is no this word in our dictionary");		
 
 
 
@@ -87,7 +89,7 @@ class Trie(object):
 
 
 
-#trie=Trie()
+trie=Trie()
 #trie.add('str','123')
 #trie.add('afbwer','456')
 #trie.add('abcde','678')
@@ -96,6 +98,18 @@ class Trie(object):
 #trie.search('strf');
 
 #trie.prin()
+dic = open("dictionary", "r")
+for line in dic:
+	Line = line.split(" ")
+	trie.add(Line[0],Line[1].strip("\n"))
+
+trie.prin()
+trie.search("the")
+trie.search("moved")
+trie.search("vatican")
+trie.search("a")
+trie.search("xerox ")
+
 
 
 
