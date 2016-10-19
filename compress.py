@@ -3,6 +3,8 @@
 from random import randint
 import codecs
 
+
+########## rand_gen() ##########
 def rand_gen():
 	plain = open("dictionary_encode", "r")
 	words = plain.read().split('\n')
@@ -79,11 +81,8 @@ def set_up_dict():
 
 	dic = codecs.open("dictionary", "w", "utf-8") # open the bijection dictionary
 	character = 0x0080     
-	sum = 0
 
 	for word in words:		# set up bijection for each word
-		sum += len(word)
-
 		if (len(word) > 2):	
 			dic.write(word)
 			dic.write(' ')
@@ -91,8 +90,6 @@ def set_up_dict():
 			dic.write('\n')
 			character += 1
 
-	print "average length of the words:",
-	print sum*1.0/len(words)
 	plain.close()
 	dic.close()
 	print "finished setting up dictionary!"
@@ -103,20 +100,58 @@ def compress():
 	rand_words = rand.read().split(' ')
 
 	encrypt_text = codecs.open("encrypt", "w")
+	sum = 0
+	num = 0
 	for rand_word in rand_words:		# encode each word
+		sum += len(rand_word)
+		num += 1
 		encrypt_text.write(encode(rand_word))
 
 	rand.close()
 	encrypt_text.close()
 
 	print "Finished encoding!!!"
+	print "average word length:",
+	print sum*1.0/num
+
+
+########## decode() ##########
+def decode(word):
+	dic = open("dictionary", "r")
+	print word
+	for line in dic:
+		Line = line.split(" ")
+
+		if (word == Line[1]):
+			print "!!!!!"
+			return Line[0].strip('\n')
+
+	return word
+
+########## decompress() ##########
+def decompress():
+	en = codecs.open("encrypt", "r", "utf-8")
+	line = en.readlines()			
+	words = []
+	for i in range(0, len(line)):
+		words.append(line[i])
+
+	decrypt_text = codecs.open("decrypt", "w")
+	for word in words:		# decode each word
+		decrypt_text.write(decode(word))
+
+	en.close()
+	decrypt_text.close()
+
+	print "Finished decoding!!!"
 
 ########## run() ##########
 def run(plain_file):
 	rand_gen()	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
-	compress()	# encode the text file
+	#compress()	# encode the text file
+	decompress()
 
 
 ########## main() ##########
