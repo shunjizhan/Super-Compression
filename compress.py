@@ -4,6 +4,7 @@ from random import randint
 from cStringIO import StringIO
 import codecs
 import os
+from trie import Trie
 
 ############# encode() #############
 def encode(word): ## TODO convert Upper to lower
@@ -155,7 +156,7 @@ def compress():
 		if not(rand_word == ''):
 			sum += len(rand_word)
 			num += 1
-			string += encode(rand_word)
+			string += trie.search(rand_word)
 
 	# now string contains binary encoding of the whole text
 	sio = StringIO(string)
@@ -166,7 +167,7 @@ def compress():
 
 	    if not b:
 	        break
-
+	    print b
 	    i = int(b, 2)
 	    c = chr(i)
 
@@ -209,7 +210,7 @@ def decompress():
 		word += file[i]
 		i += 1
 		if (i%14 == 0):
-			words.append(decode(word))
+			words.append(trie1.search(word))
 			word = ""
 
 	k = 0
@@ -231,11 +232,27 @@ def decompress():
 	f.close()
 	write.close()
 
+########## trie_setup() ##########
+def trie_setup(s):
+	dic = open(s,"r")
+	for line in dic:
+		Line = line.split(" ")
+		trie.add(Line[0],Line[1].strip("\n"))
+		trie1.add(Line[1].strip("\n"),Line[0])
+
+
+
+
 ############# run() #############
 def run(plain_file):
+
+
 	rand_gen(1000)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
+	trie.add('\n','00000000000000')
+	trie1.add('00000000000000','\n')
+	trie_setup("dictionary")
 	compress()	# encode the text file 
 	decompress()
 
@@ -247,6 +264,8 @@ def run(plain_file):
 
 ############# main() #############
 file = "random_generated_file"
+trie=Trie()
+trie1=Trie()
 run(file)
 
 

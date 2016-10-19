@@ -55,31 +55,30 @@ class Trie(object):
 
 
 	def search(self,s):
+		if (s == '\n'):
+			return '00000000000000'
+
 		p=self.root
 		n=len(s)
 		for i in range(len(s)):
+
+
 			is_there=False;
 			for j in range(len(p.children)):
 				if (s[i]==p.children[j].letter):
 					is_there=True
 					k=j
 
-
 			if (is_there==False):
-				print("There is no this word in our dictionary");
+				return('');
 				break
 			else:
-				
 				if (i==n-1) and (p.children[k].is_word):
-					print "Word encode is ",
-					print(p.key)
+					return(p.children[k].key)
 					break
 				p=p.children[k]
 
-		if (i==n):
-		 	print("There is no this word in our dictionary");		
-
-
+		return('')	
 
 
 	def  prin(self):
@@ -89,7 +88,6 @@ class Trie(object):
 
 
 
-trie=Trie()
 #trie.add('str','123')
 #trie.add('afbwer','456')
 #trie.add('abcde','678')
@@ -98,18 +96,6 @@ trie=Trie()
 #trie.search('strf');
 
 #trie.prin()
-dic = open("dictionary", "r")
-for line in dic:
-	Line = line.split(" ")
-	trie.add(Line[0],Line[1].strip("\n"))
-
-trie.prin()
-trie.search("the")
-trie.search("moved")
-trie.search("vatican")
-trie.search("a")
-trie.search("xerox ")
-
 
 
 
