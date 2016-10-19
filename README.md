@@ -1,1 +1,1 @@
-# Compression
+random_generated_file --> modify() --> modified_file --> compress() --> super_compressed_file --> decompress() --> decoded_file
