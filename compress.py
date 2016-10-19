@@ -167,7 +167,7 @@ def compress():
 
 	    if not b:
 	        break
-	    print b
+
 	    i = int(b, 2)
 	    c = chr(i)
 
@@ -178,7 +178,7 @@ def compress():
 
 	print "Finished encoding!!!"
 	avg = sum*1.0/num
-	ratio = 14/(avg*8)
+	ratio = 14/((avg+1)*8)
 	print "average word length: %.2f" % avg
 	print "expected compression ratio: %.3f" % ratio
 
@@ -247,7 +247,7 @@ def trie_setup(s):
 def run(plain_file):
 
 
-	rand_gen(1000)	# generate a random text file
+	rand_gen(100000)	# generate a random text file
 	modify(plain_file)	# modify the text file
 	set_up_dict()	# set up the bijection dictionary
 	trie.add('\n','00000000000000')
