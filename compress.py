@@ -146,8 +146,10 @@ def compress():
 	encrypt_text.close()
 
 	print "Finished encoding!!!"
-	print "average word length:",
-	print sum*1.0/num
+	avg = sum*1.0/num
+	ratio = 14/(avg*8)
+	print "average word length: %.2f" % avg
+	print "expected compression ratio: %.3f" % ratio
 
 
 ########## decode() ##########
@@ -289,13 +291,31 @@ def de():
 
 	i = 0
 	word = ""
+	words = []
 	while (i <len(file)):
 		word += file[i]
 		i += 1
 		if (i%14 == 0):
-			write.write(decode(word))
-			write.write(' ')
+			words.append(decode(word))
+			#write.write(decode(word))
+			#write.write(' ')
 			word = ""
+
+	k = 0
+	while(k < len(words)):
+		if ((k+1 < len(words)) and ((words[k+1] == ',') or (words[k+1] == '.'))):
+			write.write(words[k])
+			write.write(words[k+1])
+			write.write(' ')
+			k += 2
+		elif (words[k] == '\n'):
+			write.write(words[k])
+			k += 1
+		else:
+			write.write(words[k])
+			write.write(' ')
+			k += 1
+
 
 	f.close()
 	write.close()
@@ -323,6 +343,7 @@ def run(plain_file):
 ########## main() ##########
 file = "random"
 run(file)
+
 
 
 
