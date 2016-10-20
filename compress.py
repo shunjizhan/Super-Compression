@@ -256,8 +256,8 @@ def run(plain_file):
 	compress()	# encode the text file 
 	decompress()
 
-	before = os.stat(plain_file).st_size
-	after = os.stat('super_compressed_file').st_size
+	before = os.stat(plain_file).st_size/1000
+	after = os.stat('super_compressed_file').st_size/1000
 	print "finished compressing %s(%dKB) to super_compressed_file(%dKB)!" % (plain_file, before, after)
 	print "compression ratio: %.3f" % (after*1.0/before)
 
