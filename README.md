@@ -10,10 +10,10 @@ This is a Python program that implement a new algorithm to compress certain Engl
 
 # Specification
 The whole program will go through the following process:    
---- run() ---> random_generated_file 
---- modify() ---> modified_file 
---- compress() ---> super_compressed_file 
---- decompress() ---> decoded_file
+--- run() ---> random_generated_file <br> 
+--- modify() ---> modified_file <br> 
+--- compress() ---> super_compressed_file <br>
+--- decompress() ---> decoded_file <br>
 
 A report containing more details can be found [here](https://github.com/shunjizhan/Super-Compression/blob/master/New%20Compression%20Algorithm.pdf)
 
